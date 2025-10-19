@@ -4,7 +4,7 @@ backend:
     preBuild:
       commands:
         - npm install -g aws-cdk
-        - cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
+        - cdk bootstrap aws://158129172676/$AWS_REGION
     build:
       commands:
         - npm ci --cache .npm --prefer-offline
