@@ -1,10 +1,6 @@
 version: 1
 backend:
   phases:
-    preBuild:
-      commands:
-        - npm install -g aws-cdk
-        - cdk bootstrap aws://158129172676/$AWS_REGION
     build:
       commands:
         - npm ci --cache .npm --prefer-offline
