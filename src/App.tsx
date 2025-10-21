@@ -3,6 +3,8 @@ import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import ClassDetail from "./pages/ClassDetail";
 
 const client = generateClient<Schema>();
 
@@ -34,29 +36,53 @@ function App() {
         checkAdmin();
     }, []);
 
-    function createHablaClass() {
-        client.models.HablaClass.create({
-            name: window.prompt("Habla Class name"),
-            description: window.prompt("Habla Class description"),
-            teacher: window.prompt("Habla class teacher"),
-        });
-    }
+    // function createHablaClass() {
+        // client.models.HablaClass.create({
+            // name: window.prompt("Habla Class name"),
+            // description: window.prompt("Habla Class description"),
+            // teacher: window.prompt("Habla class teacher"),
+        // });
+    // }
 
     const { signOut } = useAuthenticator();
 
     return (
-        <main>
-            <h1>My Habla Classes</h1>
-            {isAdminUser ? (
-                <button onClick={createHablaClass}>+ new class</button>
-            ) : null}{" "}
-            <ul>
-                {hablaclasses.map((hablaclass) => (
-                    <li key={hablaclass.id}>{hablaclass.name}</li>
-                ))}
-            </ul>
-            <button onClick={signOut}>Sign out</button>
-        </main>
+        <BrowserRouter>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <main>
+                            <h1>My Habla Classes</h1>
+                            {isAdminUser ? (
+                                // <button onClick={createHablaClass}>
+                                // + new class
+                                // </button>
+                                <Link to={`/newClass/`}>+ add new class</Link>
+                            ) : null}{" "}
+                            <ul>
+                                {hablaclasses.map((hablaclass) => (
+                                    <li key={hablaclass.id}>
+                                        {hablaclass.name}
+                                    </li>
+                                ))}
+                            </ul>
+                            <button onClick={signOut}>Sign out</button>
+                        </main>
+                    }
+                ></Route>
+                <Route
+                    path="/newClass"
+                    element={
+                        // <>
+                            // <h1>Add new class</h1>
+                            // <Link to={`/`}>&lt; Inicio</Link>
+                        // </>
+                        <ClassDetail/>
+                    }
+                ></Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
 
