@@ -22,7 +22,9 @@ function App() {
             try {
                 const { tokens } = await fetchAuthSession();
                 const groups = tokens?.idToken?.payload["cognito:groups"] || [];
-                setIsAdminUser(groups.includes("admin"));
+                if (Array.isArray(groups)) {
+                    setIsAdminUser(groups.includes("admin"));
+                }
             } catch (e) {
                 console.log("groups was not an array");
                 setIsAdminUser(false);
@@ -40,18 +42,7 @@ function App() {
         });
     }
 
-    const { signOut, user } = useAuthenticator();
-
-    const isAdmin = async () => {
-        try {
-            const { tokens } = await fetchAuthSession();
-            const groups = tokens?.idToken?.payload?.["cognito:groups"] ?? [];
-            return Array.isArray(groups) && groups.includes("admin");
-        } catch (err) {
-            console.warn("No session or failed to fetch auth session:", err);
-            return false;
-        }
-    };
+    const { signOut } = useAuthenticator();
 
     return (
         <main>
