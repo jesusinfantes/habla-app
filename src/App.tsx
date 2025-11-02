@@ -1,25 +1,21 @@
+import { View } from "@aws-amplify/ui-react";
 import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import ClassList from "./pages/ClassList";
 import ClassDetail from "./pages/ClassDetail";
-
-const client = generateClient<Schema>();
+import TeacherList from "./pages/TeacherList";
+import TeacherDetail from "./pages/TeacherDetail";
+import StudentList from "./pages/StudentList";
+import StudentDetail from "./pages/StudentDetail";
+import SessionList from "./pages/SessionList";
+import SessionDetail from "./pages/SessionDetail";
 
 function App() {
     const [isAdminUser, setIsAdminUser] = useState(false);
 
-    const [hablaclasses, setHablaclasses] = useState<
-        Array<Schema["HablaClass"]["type"]>
-    >([]);
-
     useEffect(() => {
-        client.models.HablaClass.observeQuery().subscribe({
-            next: (data) => setHablaclasses([...data.items]),
-        });
-
         async function checkAdmin() {
             try {
                 const { tokens } = await fetchAuthSession();
@@ -36,14 +32,6 @@ function App() {
         checkAdmin();
     }, []);
 
-    // function createHablaClass() {
-        // client.models.HablaClass.create({
-            // name: window.prompt("Habla Class name"),
-            // description: window.prompt("Habla Class description"),
-            // teacher: window.prompt("Habla class teacher"),
-        // });
-    // }
-
     const { signOut } = useAuthenticator();
 
     return (
@@ -53,34 +41,34 @@ function App() {
                     path="/"
                     element={
                         <main>
-                            <h1>My Habla Classes</h1>
+                            <h1 className="gradient-text">HABLA</h1>
                             {isAdminUser ? (
-                                // <button onClick={createHablaClass}>
-                                // + new class
-                                // </button>
-                                <Link to={`/newClass/`}>+ add new class</Link>
+                                <View className="button-link-container">
+                                    <Link to={`/classList/`} className="button-link">Clases</Link>
+                                    <Link to={`/teacherList/`} className="button-link">Profesores</Link>
+                                    <Link to={`/studentList/`} className="button-link">Alumnos</Link>
+                                    <Link to={`/sessionList/`} className="button-link">Sesiones</Link>
+                                </View>
                             ) : null}{" "}
-                            <ul>
-                                {hablaclasses.map((hablaclass) => (
-                                    <li key={hablaclass.id}>
-                                        {hablaclass.name}
-                                    </li>
-                                ))}
-                            </ul>
                             <button onClick={signOut}>Sign out</button>
                         </main>
                     }
                 ></Route>
-                <Route
-                    path="/newClass"
-                    element={
-                        // <>
-                            // <h1>Add new class</h1>
-                            // <Link to={`/`}>&lt; Inicio</Link>
-                        // </>
-                        <ClassDetail/>
-                    }
-                ></Route>
+                
+                <Route path="/classList" element={<ClassList />}></Route>
+                <Route path="/newClass" element={<ClassDetail />}></Route>
+                <Route path="/editClass/:id" element={<ClassDetail />}></Route>
+
+                <Route path="/teacherList" element={<TeacherList />}></Route>
+                <Route path="/newTeacher" element={<TeacherDetail />}></Route>
+                <Route path="/editTeacher/:id" element={<TeacherDetail />}></Route>
+                
+                <Route path="/studentList" element={<StudentList />}></Route>
+                <Route path="/newStudent" element={<StudentDetail />}></Route>
+                <Route path="/editStudent/:id" element={<StudentDetail />}></Route>
+                
+                <Route path="/sessionList" element={<SessionList />}></Route>
+                <Route path="/newSession" element={<SessionDetail />}></Route>
             </Routes>
         </BrowserRouter>
     );
